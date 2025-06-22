@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion倒计时小组件</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .widget-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .days {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <h1 id="title">距离目标日期还有</h1>
+        <div class="countdown" id="countdown">--天</div>
+        <div class="days" id="days">--小时 --分钟 --秒</div>
+    </div>
+
+    <script>
+        // 从URL参数中获取配置（Notion嵌入时可修改）
+        const params = new URLSearchParams(window.location.search);
+        const targetDate = params.get('date') || '2025-12-31'; // 默认目标日期
+        const widgetTitle = params.get('title') || '距离目标日期还有'; // 默认标题
+        const bgColor = params.get('bgColor') || '#ffffff'; // 默认背景色
+
+        // 应用配置
+        document.getElementById('title').textContent = widgetTitle;
+        document.querySelector('.widget-container').style.backgroundColor = bgColor;
+
+        // 倒计时计算
+        function updateCountdown() {
+            const now = new Date();
+            const target = new Date(targetDate);
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdown').textContent = '已到达！';
+                document.getElementById('days').textContent = '';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').textContent = `${days}天`;
+            document.getElementById('days').textContent = `${hours}小时 ${minutes}分钟 ${seconds}秒`;
+        }
+
+        // 每秒更新
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
